@@ -13,6 +13,7 @@ from django.contrib.auth.hashers import make_password
 from . import models
 from django.utils import timezone
 import json
+from supabase import create_client, Client
 
 # Create your views here.
 @api_view(['GET'])
@@ -116,7 +117,21 @@ def memories(request):
         image = request.FILES.get('image')
         alt_text = postdata['alt_text']
         if author and content:
-            models.Memories.objects.create(author_id=author,content=content,image=image,alt_text=alt_text)
+            url: str = "https://qwrranvmkfmxcmjilkam.supabase.co"
+            key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3cnJhbnZta2ZteGNtamlsa2FtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY5NzI2NDI3MywiZXhwIjoyMDEyODQwMjczfQ.O2suIZCGyNwbPV7PC8EyK8jrvyrF3iTv31cdKwsVD4M"
+            supabase: Client = create_client(url, key)
+            print(image.name,image.content_type)
+            try:
+                name = image.name.split('.')[0]
+                file_type = image.content_type
+                image_content = image.read()
+                supabase.storage.from_("images").upload(file=image_content,path=name, file_options={"content-type": file_type})
+                url = supabase.storage.from_('images').get_public_url(name)
+                print(url)
+                print(type(url))
+            except Exception as e:
+                return Response({"message": "Memory Not Added"}, status=status.HTTP_400_BAD_REQUEST)
+            models.Memories.objects.create(author_id=author,content=content,image=url,alt_text=alt_text)
             return Response({"message": "Memory Added"})
         else:
             return Response({"message": "Memory Not Added"}, status=status.HTTP_400_BAD_REQUEST)
