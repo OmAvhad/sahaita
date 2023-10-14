@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
-from .serializers import UserSerializer, UserInfoSerializer, UserMoodSerializer, MemoriesSerializer
+from .serializers import UserSerializer, UserInfoSerializer, UserMoodSerializer, MemoriesSerializer, MedicationsSerializer, MedicationsRecordSerializer, AppointmentSerializer
 from django.contrib.auth.hashers import make_password
 from . import models
 from django.utils import timezone
@@ -135,3 +135,87 @@ def memories(request):
             return Response({"message": "Memory Added"})
         else:
             return Response({"message": "Memory Not Added"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST','GET'])   
+def medications(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        if user_id:
+            meds = models.Medications.objects.filter(user_id=user_id)
+            serializer = MedicationsSerializer(meds, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        postdata = request.POST
+        user = postdata['user_id']
+        name = postdata['name']
+        time_of_day = postdata['time_of_day']
+        if user and name and time_of_day:
+            models.Medications.objects.create(user_id=user,name=name,time_of_day=time_of_day)
+            return Response({"message": "Medication Added"})
+        else:
+            return Response({"message": "Medication Not Added"}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+@api_view(['GET','POST'])
+def medications_record(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        if user_id:
+            meds = models.Medications.objects.filter(user_id=user_id)
+            for m in meds:
+                try:
+                    obj = models.MedicationsRecord.objects.get(user_id=user_id, medicine_id=m.id, date=timezone.now().date())
+                except:
+                    obj = None
+                if not obj:
+                    obj = models.MedicationsRecord.objects.create(user_id=user_id, medicine_id=m.id, date=timezone.now().date())
+                
+            meds_record = models.MedicationsRecord.objects.filter(user_id=user_id, date=timezone.now().date())
+            serializer = MedicationsRecordSerializer(meds_record, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        postdata = request.POST
+        user = postdata['user_id']
+        medicine = postdata['medicine']
+        taken = postdata['taken']
+        if user and medicine and taken:
+            try:
+                obj = models.MedicationsRecord.objects.get(user_id=user, medicine_id=medicine, date=timezone.now().date(), taken=False)
+            except:
+                obj = models.MedicationsRecord.objects.create(user_id=user, medicine_id=medicine, date=timezone.now().date())
+            if obj:
+                obj.taken = True
+                obj.save()
+                return Response({"message": "Medication Record Added"})
+        else:
+            return Response({"message": "Medication Record Not Added"}, status=status.HTTP_400_BAD_REQUEST)\
+                
+                
+@api_view(['POST','GET'])
+def appointment(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        if user_id:
+            appointments = models.Appointment.objects.filter(user_id=user_id)
+            serializer = AppointmentSerializer(appointments, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        postdata = request.POST
+        user = postdata['user_id']
+        doctor = postdata['doctor']
+        date = postdata['date']
+        time = postdata['time']
+        location = postdata['location']
+        reason = postdata['reason']
+        notes = postdata['notes']
+        if user and doctor and date and time and location and reason and notes:
+            models.Appointment.objects.create(user_id=user,doctor=doctor,date=date,time=time,location=location,reason=reason,notes=notes)
+            return Response({"message": "Appointment Added"})
+        else:
+            return Response({"message": "Appointment Not Added"}, status=status.HTTP_400_BAD_REQUEST)

@@ -21,3 +21,26 @@ class Memories(models.Model):
     image = models.URLField(blank=True)
     date_posted = models.DateTimeField(default=datetime.now())
     alt_text = models.TextField(blank=True)
+    
+
+class Medications(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=500, null=True, blank=True)
+    time_of_day = models.TimeField(null=True, blank=True)
+    
+    
+class MedicationsRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    medicine = models.ForeignKey(Medications, on_delete=models.CASCADE)
+    taken = models.BooleanField(default=False)
+    date = models.DateField(null=True, blank=True)
+    
+    
+class Appointment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    doctor = models.CharField(max_length=500, null=True, blank=True)
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+    location = models.CharField(max_length=500, null=True, blank=True)
+    reason = models.TextField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)

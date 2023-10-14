@@ -30,3 +30,21 @@ class MemoriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Memories
         fields = '__all__'
+        
+
+class MedicationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Medications
+        fields = '__all__'
+
+        
+class MedicationsRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.MedicationsRecord
+        fields = '__all__'
+        
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Appointment
+        fields = '__all__'

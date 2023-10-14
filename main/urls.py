@@ -15,4 +15,11 @@ urlpatterns = [
     
     # memories
     path('api/memories/', views.memories, name='memories'),
+    
+    # medications
+    path('api/medications/', views.medications, name='medications'),
+    path('api/record-medication/', views.medications_record, name='record_medication'),
+    
+    # appointments
+    path('api/appointments/', views.appointment, name='appointments'),
 ]
