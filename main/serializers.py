@@ -25,3 +25,8 @@ class UserMoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.UserMood
         fields = ('id','user','mood','date')
+        
+class MemoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Memories
+        fields = '__all__'

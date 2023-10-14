@@ -9,4 +9,10 @@ urlpatterns = [
     path('api/user-info/', views.user_info, name='user_info'),
     path('api/user-mood/', views.user_mood, name='user_mood'),
     path('api/user-data/', views.user_data, name='user_data'),
+    
+    # meds
+    path('api/meds/', views.meds_data, name='meds'),
+    
+    # memories
+    path('api/memories/', views.memories, name='memories'),
 ]

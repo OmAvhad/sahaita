@@ -8,10 +8,11 @@ from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 from django.contrib.auth import authenticate, login
-from .serializers import UserSerializer, UserInfoSerializer, UserMoodSerializer
+from .serializers import UserSerializer, UserInfoSerializer, UserMoodSerializer, MemoriesSerializer
 from django.contrib.auth.hashers import make_password
 from . import models
 from django.utils import timezone
+import json
 
 # Create your views here.
 @api_view(['GET'])
@@ -84,3 +85,38 @@ def user_data(request):
             })
     else:
         return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def meds_data(request):
+    json_file_path = 'output.json'
+
+    # Read the JSON data from the file
+    with open(json_file_path, 'r') as file:
+        json_data = json.load(file)
+        
+    serialized_data = json_data[0::1000]
+
+    # Return the JSON data as a response
+    return JsonResponse(serialized_data, safe=False)
+
+@api_view(['POST','GET'])
+def memories(request):
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        if user_id:
+            memories = models.Memories.objects.filter(author_id=user_id).order_by('-date_posted')
+            serializer = MemoriesSerializer(memories, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        postdata = request.POST
+        author = postdata['user_id']
+        content = postdata['content']
+        image = request.FILES.get('image')
+        alt_text = postdata['alt_text']
+        if author and content:
+            models.Memories.objects.create(author_id=author,content=content,image=image,alt_text=alt_text)
+            return Response({"message": "Memory Added"})
+        else:
+            return Response({"message": "Memory Not Added"}, status=status.HTTP_400_BAD_REQUEST)
