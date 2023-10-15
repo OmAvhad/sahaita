@@ -218,7 +218,7 @@ def medications_record(request):
 #         return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)                         
                          
      
-@api_view(['POST'])
+@api_view(['POST','GET'])
 def appointment(request):
     if request.method == 'GET':
         user_id = request.GET.get('user_id')
