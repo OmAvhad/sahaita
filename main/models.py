@@ -18,7 +18,7 @@ class UserMood(models.Model):
 class Memories(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    image = models.URLField(blank=True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     date_posted = models.DateTimeField(default=datetime.now())
     alt_text = models.TextField(blank=True)
     
@@ -44,3 +44,10 @@ class Appointment(models.Model):
     location = models.CharField(max_length=500, null=True, blank=True)
     reason = models.TextField(null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
+    
+
+class Location(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    lat = models.FloatField(null=True, blank=True)
+    lon = models.FloatField(null=True, blank=True)
+    date_time = models.DateTimeField()

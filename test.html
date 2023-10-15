@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POST Request using Fetch</title>
+</head>
+<body>
+    <button onclick="postData()">Send POST Request</button>
+    <script>
+        async function  postData() {
+            let headersList = {
+                "Accept": "*/*",
+                "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+                "Content-Type": "application/json"
+               }
+               
+               let bodyContent = JSON.stringify({
+                 "email":"om@gmail.com",
+                 "password": "1234"
+               });
+               
+               let response = await fetch("https://d4f3-103-137-94-219.ngrok-free.app/api/appointments/?user_id=1", { 
+                 method: "GET",
+                 headers: headersList
+               });
+               
+               let data = await response.text();
+               console.log(data);
+               
+            
+        }
+    </script>
+</body>
+</html>
