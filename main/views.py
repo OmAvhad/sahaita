@@ -207,41 +207,41 @@ def medications_record(request):
         else:
             return Response({"message": "Medication Record Not Added"}, status=status.HTTP_400_BAD_REQUEST)\
                     
-@api_view(['POST'])     
-def get_appointments(request):
-    user_id = request.GET.get('user_id')
-    if user_id:
-        appointments = models.Appointment.objects.filter(user_id=user_id)
-        serializer = AppointmentSerializer(appointments, many=True)
-        return Response(serializer.data)
-    else:
-        return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)                         
+# @api_view(['POST'])     
+# def get_appointments(request):
+#     user_id = request.GET.get('user_id')
+#     if user_id:
+#         appointments = models.Appointment.objects.filter(user_id=user_id)
+#         serializer = AppointmentSerializer(appointments, many=True)
+#         return Response(serializer.data)
+#     else:
+#         return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)                         
                          
      
 @api_view(['POST'])
 def appointment(request):
-#     if request.method == 'GET':
-#         user_id = request.GET.get('user_id')
-#         if user_id:
-#             appointments = models.Appointment.objects.filter(user_id=user_id)
-#             serializer = AppointmentSerializer(appointments, many=True)
-#             return Response(serializer.data)
-#         else:
-#             return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
-#     else:
-    postdata = json.loads(request.body)
-    user = postdata.get('user_id')
-    doctor = postdata.get('doctor')
-    date = postdata.get('date')
-    time = postdata.get('time')
-    location = postdata.get('location')
-    reason = postdata.get('reason')
-    notes = postdata.get('notes')
-    if user and doctor and date and time and location and reason and notes:
-        models.Appointment.objects.create(user_id=user,doctor=doctor,date=date,time=time,location=location,reason=reason,notes=notes)
-        return Response({"message": "Appointment Added"})
+    if request.method == 'GET':
+        user_id = request.GET.get('user_id')
+        if user_id:
+            appointments = models.Appointment.objects.filter(user_id=user_id)
+            serializer = AppointmentSerializer(appointments, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "User Not Found"}, status=status.HTTP_400_BAD_REQUEST)
     else:
-        return Response({"message": "Appointment Not Added"}, status=status.HTTP_400_BAD_REQUEST)
+        postdata = json.loads(request.body)
+        user = postdata.get('user_id')
+        doctor = postdata.get('doctor')
+        date = postdata.get('date')
+        time = postdata.get('time')
+        location = postdata.get('location')
+        reason = postdata.get('reason')
+        notes = postdata.get('notes')
+        if user and doctor and date and time and location and reason and notes:
+            models.Appointment.objects.create(user_id=user,doctor=doctor,date=date,time=time,location=location,reason=reason,notes=notes)
+            return Response({"message": "Appointment Added"})
+        else:
+            return Response({"message": "Appointment Not Added"}, status=status.HTTP_400_BAD_REQUEST)
         
 @api_view(['POST','GET'])
 def location(request):
