@@ -29,7 +29,7 @@ urlpatterns = [
     path('api/record-medication/', views.medications_record, name='record_medication'),
     
     # appointments
-    path('api/get_appointments/', views.get_appointments, name='get_appointments'),
+    # path('api/get_appointments/', views.get_appointments, name='get_appointments'),
     path('api/appointments/', views.appointment, name='appointments'),
     
     # location
